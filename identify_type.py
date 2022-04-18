@@ -1,5 +1,4 @@
 from datetime import datetime
-import pandas as pd
 import numpy as np
 import re
 
@@ -20,7 +19,42 @@ def isDate(value):
                     date = datetime.strptime(value, '%Y/%m/%d').date()
                     return(4)
                 except:
-                    return(0)
+                    try: ### 22/05/2003 12:42
+                        date = datetime.strptime(value, '%d/%m/%Y %H:%M').date()
+                        return(5)
+                    except:
+                        try: ### 2003/05/22 12:42
+                            date = datetime.strptime(value, '%Y/%m/%d %H:%M').date()
+                            return(6)
+                        except:
+                            try: ### 22-05-2003 12:42
+                                date = datetime.strptime(value, '%d-%m-%Y %H:%M').date()
+                                return(7)
+                            except:
+                                try: ### 2003-05-22 12:42
+                                    date = datetime.strptime(value, '%Y-%m-%d %H:%M').date()
+                                    return(8)
+                                except:
+                                    try: ### 22/05/2003 12:42:59
+                                        date = datetime.strptime(value, '%d/%m/%Y %H:%M:%S').date()
+                                        return(9)
+                                    except:
+                                        return(isDate2(value))
+
+def isDate2(value):
+    try: ### 2003/05/22 12:42:59
+        date = datetime.strptime(value, '%Y/%m/%d %H:%M:%S').date()
+        return(10)
+    except:
+        try: ### 22-05-2003 12:42:59
+            date = datetime.strptime(value, '%d-%m-%Y %H:%M:%S').date()
+            return(11)
+        except:
+            try: ### 2003-05-22 12:42:59
+                date = datetime.strptime(value, '%Y-%m-%d %H:%M:%S').date()
+                return(12)
+            except:
+                return(0)
 
 def isNumberFlo(n):
     try:
@@ -100,6 +134,7 @@ def trataColumn(column):
     if len(data_types) == 1:
         return(convertColumn(max_type, column))
     else:
+        print('Validar possível tratamento ' + column.name, data_types) ###################
         try:
             del data_types['nul']
         except:
@@ -119,17 +154,30 @@ def trataColumn(column):
         
         if max_type == 'txt':
             return(convertColumn(max_type, column))
-        
+
+        if max_type == 'flo' or (len(data_types) == 2 and 'flo' in data_types.keys() and 'digit' in data_types.keys()):
+            for i in range(column.size):
+                if not isNumberFlo(column[i]):
+                    column[i] = convertStrToStrNumber(column[i])
+            return(convertColumn(max_type, column))
+
         if max_type == 'digit':
             for i in range(column.size):
-            #for i in column:
                 if not str(column[i]).replace(" ", "").isdigit():
                     column[i] = column[i].replace(" ", "")
                     column[i] = convertStrToStrNumber(column[i])
 
             return(convertColumn(max_type, column))
+
+        if max_type == 'date':
+            for i in range(column.size):
+                if not isDate(column[i]):
+                    print('data value replaced with NaN: ' + str(column[i]))
+                    column[i] = np.nan
+
+            return(convertColumn(max_type, column))
         
-        print('VERIFICAR O TRATAMENTO!! ', data_types, column.iloc[:10])
+        print('CASE NOT TREATED, PLEASE VERIFY!! ', data_types, column.iloc[:10])
         return(convertColumn(max_type, column))
 
 def trataDf(df):
@@ -143,8 +191,14 @@ def trataDf(df):
 
 
 
+######### TESTES
+
+
+import pandas as pd
+
+
 #print(os.listdir())
-df = pd.read_csv("util_convert_column/cabeca.csv")
+df = pd.read_csv("Identify_Type/files/lala.csv")
 
 #values = df.iloc[:,2]
 
@@ -153,10 +207,12 @@ df = pd.read_csv("util_convert_column/cabeca.csv")
 #print(list(df.dtypes))
 #df.to_csv('1.csv')
 
+print(df.info)
+
 df = trataDf(df)
 
-print(df)
+print(df.info)
 
 #print(list(df.dtypes))
 
-df.to_csv('util_convert_column/2.csv')
+df.to_csv('Identify_Type/files/2.csv')
