@@ -1,6 +1,7 @@
 from datetime import datetime
 import numpy as np
 import re
+import logging
 
 def isDate(value):
     try: ### 22/05/2003
@@ -134,7 +135,6 @@ def trataColumn(column):
     if len(data_types) == 1:
         return(convertColumn(max_type, column))
     else:
-        print('Validar possível tratamento ' + column.name, data_types) ###################
         try:
             del data_types['nul']
         except:
@@ -151,6 +151,10 @@ def trataColumn(column):
         
         if len(data_types) == 1:
             return(convertColumn(max_type, column))
+
+        ### ALERTA
+        if (sum(data_types.values())/10*8 > data_types[max_type]):  # total do max_type < 80% do total 
+            logging.warning('DIFFERENCE OF PERCENTAGE OF DATA TYPES IN THIS COLUMN IS BIGGER THEN 80%: ' + column.name)
         
         if max_type == 'txt':
             return(convertColumn(max_type, column))
@@ -172,12 +176,12 @@ def trataColumn(column):
         if max_type == 'date':
             for i in range(column.size):
                 if not isDate(column[i]):
-                    print('data value replaced with NaN: ' + str(column[i]))
+                    logging.warning('Data value replaced with NaN: ' + str(column[i]))
                     column[i] = np.nan
 
             return(convertColumn(max_type, column))
         
-        print('CASE NOT TREATED, PLEASE VERIFY!! ', data_types, column.iloc[:10])
+        logging.warning('CASE NOT TREATED, PLEASE VERIFY!! ', data_types, column.iloc[:10])
         return(convertColumn(max_type, column))
 
 def trataDf(df):
@@ -186,33 +190,3 @@ def trataDf(df):
     for column in columns:
         df[column] = trataColumn(df[column])
     return df
-
-
-
-
-
-######### TESTES
-
-
-import pandas as pd
-
-
-#print(os.listdir())
-df = pd.read_csv("Identify_Type/files/lala.csv")
-
-#values = df.iloc[:,2]
-
-#df.iloc[:,0:]
-
-#print(list(df.dtypes))
-#df.to_csv('1.csv')
-
-print(df.info)
-
-df = trataDf(df)
-
-print(df.info)
-
-#print(list(df.dtypes))
-
-df.to_csv('Identify_Type/files/2.csv')
