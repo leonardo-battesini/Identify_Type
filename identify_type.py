@@ -77,9 +77,11 @@ def convertColumn(type, column):
         column = column.fillna(0)
         column = column.convert_dtypes(convert_floating=True)
     elif type == 'nul':
+        logging.warning('Column with all values NULL: ' + column.name)
         column = column.fillna('')
         column = column.convert_dtypes(convert_string=True)
     elif type == 'empt':
+        logging.warning('Column with all values EMPTY: ' + column.name)
         column = column.fillna('')
         column = column.convert_dtypes(convert_string=True)
     elif type == 'date':
@@ -190,3 +192,15 @@ def trataDf(df):
     for column in columns:
         df[column] = trataColumn(df[column])
     return df
+
+
+
+######### TESTES
+
+# import pandas as pd
+
+# df = pd.read_csv("Identify_Type/files/cabeca.csv")
+
+# df = trataDf(df)
+
+# df.to_csv('Identify_Type/files/2.csv')
