@@ -3,60 +3,6 @@ import numpy as np
 import re
 import logging
 
-def isDate(value):
-    try: ### 22/05/2003
-        date = datetime.strptime(value, '%d/%m/%Y').date()
-        return(1)
-    except:
-        try: ### 22-05-2003
-            date = datetime.strptime(value, '%d-%m-%Y').date()
-            return(2)
-        except:
-            try: ### 2003-05-22
-                date = datetime.strptime(value, '%Y-%m-%d').date()
-                return(3)
-            except:
-                try: ### 2003/05/22
-                    date = datetime.strptime(value, '%Y/%m/%d').date()
-                    return(4)
-                except:
-                    try: ### 22/05/2003 12:42
-                        date = datetime.strptime(value, '%d/%m/%Y %H:%M').date()
-                        return(5)
-                    except:
-                        try: ### 2003/05/22 12:42
-                            date = datetime.strptime(value, '%Y/%m/%d %H:%M').date()
-                            return(6)
-                        except:
-                            try: ### 22-05-2003 12:42
-                                date = datetime.strptime(value, '%d-%m-%Y %H:%M').date()
-                                return(7)
-                            except:
-                                try: ### 2003-05-22 12:42
-                                    date = datetime.strptime(value, '%Y-%m-%d %H:%M').date()
-                                    return(8)
-                                except:
-                                    try: ### 22/05/2003 12:42:59
-                                        date = datetime.strptime(value, '%d/%m/%Y %H:%M:%S').date()
-                                        return(9)
-                                    except:
-                                        return(isDate2(value))
-
-def isDate2(value):
-    try: ### 2003/05/22 12:42:59
-        date = datetime.strptime(value, '%Y/%m/%d %H:%M:%S').date()
-        return(10)
-    except:
-        try: ### 22-05-2003 12:42:59
-            date = datetime.strptime(value, '%d-%m-%Y %H:%M:%S').date()
-            return(11)
-        except:
-            try: ### 2003-05-22 12:42:59
-                date = datetime.strptime(value, '%Y-%m-%d %H:%M:%S').date()
-                return(12)
-            except:
-                return(0)
-
 def isNumberFlo(n):
     try:
         float(n)
@@ -185,6 +131,60 @@ def trataColumn(column):
         
         logging.warning('CASE NOT TREATED, PLEASE VERIFY!! ', data_types, column.iloc[:10])
         return(convertColumn(max_type, column))
+
+def isDate(value):
+    try: ### 22/05/2003
+        date = datetime.strptime(value, '%d/%m/%Y').date()
+        return(1)
+    except:
+        try: ### 22-05-2003
+            date = datetime.strptime(value, '%d-%m-%Y').date()
+            return(2)
+        except:
+            try: ### 2003-05-22
+                date = datetime.strptime(value, '%Y-%m-%d').date()
+                return(3)
+            except:
+                try: ### 2003/05/22
+                    date = datetime.strptime(value, '%Y/%m/%d').date()
+                    return(4)
+                except:
+                    try: ### 22/05/2003 12:42
+                        date = datetime.strptime(value, '%d/%m/%Y %H:%M').date()
+                        return(5)
+                    except:
+                        try: ### 2003/05/22 12:42
+                            date = datetime.strptime(value, '%Y/%m/%d %H:%M').date()
+                            return(6)
+                        except:
+                            try: ### 22-05-2003 12:42
+                                date = datetime.strptime(value, '%d-%m-%Y %H:%M').date()
+                                return(7)
+                            except:
+                                try: ### 2003-05-22 12:42
+                                    date = datetime.strptime(value, '%Y-%m-%d %H:%M').date()
+                                    return(8)
+                                except:
+                                    try: ### 22/05/2003 12:42:59
+                                        date = datetime.strptime(value, '%d/%m/%Y %H:%M:%S').date()
+                                        return(9)
+                                    except:
+                                        return(isDate2(value))
+
+def isDate2(value):
+    try: ### 2003/05/22 12:42:59
+        date = datetime.strptime(value, '%Y/%m/%d %H:%M:%S').date()
+        return(10)
+    except:
+        try: ### 22-05-2003 12:42:59
+            date = datetime.strptime(value, '%d-%m-%Y %H:%M:%S').date()
+            return(11)
+        except:
+            try: ### 2003-05-22 12:42:59
+                date = datetime.strptime(value, '%Y-%m-%d %H:%M:%S').date()
+                return(12)
+            except:
+                return(0)
 
 def trataDf(df):
     columns = list(df.columns)
