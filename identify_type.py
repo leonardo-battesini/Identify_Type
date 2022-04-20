@@ -192,15 +192,3 @@ def trataDf(df):
     for column in columns:
         df[column] = trataColumn(df[column])
     return df
-
-
-
-######### TESTES
-
-# import pandas as pd
-
-# df = pd.read_csv("Identify_Type/files/cabeca.csv")
-
-# df = trataDf(df)
-
-# df.to_csv('Identify_Type/files/2.csv')
