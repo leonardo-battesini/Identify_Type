@@ -3,7 +3,6 @@ import numpy as np
 import re
 import logging
 
-
 def isNumberFlo(n):
     try:
         float(n)
